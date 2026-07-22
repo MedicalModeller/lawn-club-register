@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trent Park Lawn Club — Pool Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:      #0B3339;
+    --deep:     #145C66;
+    --aqua:     #4FC7DA;
+    --foam:     #F3F7F5;
+    --sand:     #D8C39C;
+    --coral:    #E2795A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse at 50% -10%, var(--deep), var(--ink) 60%);
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--foam);
+    overflow-x:hidden;
+  }
+  .card{
+    position:relative;
+    width:min(520px, 92vw);
+    padding:56px 40px 40px;
+    text-align:center;
+    z-index:2;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--sand);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-optical-sizing:auto;
+    font-size:clamp(20px, 4vw, 26px);
+    margin:0 0 34px;
+    color:var(--foam);
+  }
+  .hero-number{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(96px, 26vw, 168px);
+    line-height:1;
+    color:var(--aqua);
+    text-shadow:0 0 40px rgba(79,199,218,.35);
+    transition:transform .4s ease;
+  }
+  .hero-number.bump{ transform:scale(1.06); }
+  .hero-label{
+    font-size:13px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--foam);
+    opacity:.75;
+    margin-top:4px;
+  }
+  .split{
+    display:flex;
+    justify-content:center;
+    gap:0;
+    margin-top:36px;
+    border-top:1px solid rgba(243,247,245,.15);
+    padding-top:28px;
+  }
+  .stat{ flex:1; }
+  .stat + .stat{ border-left:1px solid rgba(243,247,245,.15); }
+  .stat .num{
+    font-size:clamp(28px, 6vw, 40px);
+    font-weight:500;
+    color:var(--foam);
+  }
+  .stat.guests .num{ color:var(--coral); }
+  .stat.children .num{ color:var(--sand); }
+  .stat .lbl{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    opacity:.6;
+    margin-top:4px;
+  }
+  .updated{
+    margin-top:32px;
+    font-size:11px;
+    opacity:.5;
+  }
+  .updated.stale{ color:var(--coral); opacity:.85; }
+
+  /* ripple / wave signature at the base of the page */
+  .waves{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    height:140px;
+    z-index:1;
+    opacity:.5;
+  }
+  .waves path{ fill:var(--deep); }
+  .waves .w2{ fill:var(--ink); opacity:.8; }
+  @keyframes drift{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  .wave-track{
+    width:200%;
+    height:100%;
+    display:flex;
+    animation:drift 18s linear infinite;
+  }
+  .wave-track svg{ width:50%; height:100%; flex-shrink:0; }
+
+  @media (prefers-reduced-motion: reduce){
+    .wave-track{ animation:none; }
+    .hero-number{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="eyebrow">Trent Park Lawn Club</div>
+    <h1>People at the pool right now</h1>
+
+    <div class="hero-number" id="total">–</div>
+    <div class="hero-label">in the pool area</div>
+
+    <div class="split">
+      <div class="stat residents">
+        <div class="num" id="residents">–</div>
+        <div class="lbl">Residents</div>
+      </div>
+      <div class="stat guests">
+        <div class="num" id="adultGuests">–</div>
+        <div class="lbl">Adult Guests</div>
+      </div>
+      <div class="stat children">
+        <div class="num" id="children">–</div>
+        <div class="lbl">Children</div>
+      </div>
+    </div>
+
+    <div class="updated" id="updated">Loading…</div>
+  </div>
+
+  <div class="waves">
+    <div class="wave-track">
+      <svg viewBox="0 0 800 140" preserveAspectRatio="none"><path class="w2" d="M0,60 C150,120 350,0 500,60 C650,120 750,20 800,60 L800,140 L0,140 Z"/></svg>
+      <svg viewBox="0 0 800 140" preserveAspectRatio="none"><path class="w2" d="M0,60 C150,120 350,0 500,60 C650,120 750,20 800,60 L800,140 L0,140 Z"/></svg>
+    </div>
+  </div>
+
+<script>
+  // Paste the "Publish to web" CSV URL for the public spreadsheet's
+  // "Counts" tab here.
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxnkryb-seYb4kijqbYnNcMKzBqk4wAeb8upnhMaFuphon_3VNDCeCdm2csLD1YaORHQS9qXXxR_nG/pub?gid=1539529397&single=true&output=csv";
+
+  const REFRESH_MS = 20000;
+  let lastTotal = null;
+
+  function parseCsv(text){
+    const lines = text.trim().split("\n").map(l => l.split(",").map(c => c.trim()));
+    const [, dataRow] = lines; // row 0 = header, row 1 = values
+    return {
+      residents: parseInt(dataRow[0], 10) || 0,
+      adultGuests: parseInt(dataRow[1], 10) || 0,
+      children: parseInt(dataRow[2], 10) || 0,
+      total: parseInt(dataRow[3], 10) || 0,
+      updated: dataRow[4] || ""
+    };
+  }
+
+  async function refresh(){
+    try{
+      const res = await fetch(CSV_URL + (CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now());
+      if(!res.ok) throw new Error("Fetch failed");
+      const { residents, adultGuests, children, total, updated } = parseCsv(await res.text());
+
+      document.getElementById("residents").textContent = residents;
+      document.getElementById("adultGuests").textContent = adultGuests;
+      document.getElementById("children").textContent = children;
+
+      const totalEl = document.getElementById("total");
+      totalEl.textContent = total;
+      if(lastTotal !== null && total !== lastTotal){
+        totalEl.classList.add("bump");
+        setTimeout(() => totalEl.classList.remove("bump"), 400);
+      }
+      lastTotal = total;
+
+      const updatedEl = document.getElementById("updated");
+      updatedEl.textContent = "Last updated " + (updated || "just now");
+      updatedEl.classList.remove("stale");
+    }catch(err){
+      document.getElementById("updated").textContent = "Couldn't reach the live count — retrying…";
+      document.getElementById("updated").classList.add("stale");
+    }
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>
