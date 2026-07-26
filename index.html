@@ -24,7 +24,7 @@
     justify-content:center;
     background:
       radial-gradient(ellipse at 50% -10%, var(--deep), var(--ink) 60%);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:'IBM Plex Mono', 'PingFang SC', 'Microsoft YaHei', monospace, sans-serif;
     color:var(--foam);
     overflow-x:hidden;
   }
@@ -43,7 +43,7 @@
     margin-bottom:6px;
   }
   h1{
-    font-family:'Fraunces', serif;
+    font-family:'Fraunces', 'PingFang SC', 'Microsoft YaHei', serif, sans-serif;
     font-weight:300;
     font-optical-sizing:auto;
     font-size:clamp(20px, 4vw, 26px);
@@ -99,6 +99,34 @@
   }
   .updated.stale{ color:var(--coral); opacity:.85; }
 
+  .lang-toggle{
+    position:absolute;
+    top:20px;
+    right:20px;
+    display:flex;
+    border:1px solid rgba(243,247,245,.3);
+    border-radius:999px;
+    overflow:hidden;
+    z-index:3;
+  }
+  .lang-toggle button{
+    font-family:'IBM Plex Mono', 'PingFang SC', 'Microsoft YaHei', monospace, sans-serif;
+    font-size:11px;
+    letter-spacing:.08em;
+    background:transparent;
+    color:var(--foam);
+    opacity:.6;
+    border:none;
+    padding:6px 14px;
+    cursor:pointer;
+  }
+  .lang-toggle button.active{
+    background:var(--aqua);
+    color:var(--ink);
+    opacity:1;
+    font-weight:600;
+  }
+
   /* ripple / wave signature at the base of the page */
   .waves{
     position:fixed;
@@ -130,24 +158,29 @@
 <body>
 
   <div class="card">
-    <div class="eyebrow">Trent Park Lawn Club</div>
-    <h1>People at the pool right now</h1>
+    <div class="lang-toggle">
+      <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="lang-zh" onclick="setLang('zh')">中文</button>
+    </div>
+
+    <div class="eyebrow" data-i18n="clubName">Trent Park Lawn Club</div>
+    <h1 data-i18n="heading">People at the pool right now</h1>
 
     <div class="hero-number" id="total">–</div>
-    <div class="hero-label">in the pool area</div>
+    <div class="hero-label" data-i18n="heroLabel">in the pool area</div>
 
     <div class="split">
       <div class="stat residents">
         <div class="num" id="residents">–</div>
-        <div class="lbl">Residents</div>
+        <div class="lbl" data-i18n="residents">Residents</div>
       </div>
       <div class="stat guests">
         <div class="num" id="adultGuests">–</div>
-        <div class="lbl">Adult Guests</div>
+        <div class="lbl" data-i18n="adultGuests">Adult Guests</div>
       </div>
       <div class="stat children">
         <div class="num" id="children">–</div>
-        <div class="lbl">Children</div>
+        <div class="lbl" data-i18n="children">Children</div>
       </div>
     </div>
 
@@ -168,6 +201,52 @@
 
   const REFRESH_MS = 20000;
   let lastTotal = null;
+  let lastUpdatedRaw = "";
+  let currentLang = "en";
+
+  const I18N = {
+    en: {
+      clubName: "Trent Park Lawn Club",
+      heading: "People at the pool right now",
+      heroLabel: "in the pool area",
+      residents: "Residents",
+      adultGuests: "Adult Guests",
+      children: "Children",
+      lastUpdated: "Last updated",
+      justNow: "just now",
+      error: "Couldn't reach the live count — retrying…"
+    },
+    zh: {
+      clubName: "特伦特公园草坪俱乐部",
+      heading: "泳池当前人数",
+      heroLabel: "在泳池区域",
+      residents: "住户",
+      adultGuests: "成人客人",
+      children: "儿童",
+      lastUpdated: "最后更新",
+      justNow: "刚刚",
+      error: "无法获取实时数据 — 正在重试…"
+    }
+  };
+
+  function setLang(lang){
+    currentLang = lang;
+    document.getElementById("lang-en").classList.toggle("active", lang === "en");
+    document.getElementById("lang-zh").classList.toggle("active", lang === "zh");
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      el.textContent = I18N[lang][el.getAttribute("data-i18n")];
+    });
+    updateUpdatedText();
+  }
+
+  function updateUpdatedText(){
+    const updatedEl = document.getElementById("updated");
+    if(updatedEl.classList.contains("stale")){
+      updatedEl.textContent = I18N[currentLang].error;
+    } else {
+      updatedEl.textContent = I18N[currentLang].lastUpdated + " " + (lastUpdatedRaw || I18N[currentLang].justNow);
+    }
+  }
 
   function parseCsv(text){
     const lines = text.trim().split("\n").map(l => l.split(",").map(c => c.trim()));
@@ -199,12 +278,12 @@
       }
       lastTotal = total;
 
-      const updatedEl = document.getElementById("updated");
-      updatedEl.textContent = "Last updated " + (updated || "just now");
-      updatedEl.classList.remove("stale");
+      lastUpdatedRaw = updated;
+      document.getElementById("updated").classList.remove("stale");
+      updateUpdatedText();
     }catch(err){
-      document.getElementById("updated").textContent = "Couldn't reach the live count — retrying…";
       document.getElementById("updated").classList.add("stale");
+      updateUpdatedText();
     }
   }
 
