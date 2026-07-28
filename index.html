@@ -105,39 +105,41 @@
     border-top:1px solid rgba(243,247,245,.15);
     display:flex;
     justify-content:center;
-    gap:56px;
-    flex-wrap:wrap;
+    gap:24px;
+    flex-wrap:nowrap;
   }
   .form-card{
     display:flex;
     flex-direction:column;
     align-items:center;
-    max-width:110px;
+    flex:1;
+    min-width:0;
+    max-width:145px;
   }
   .form-card img{
-    width:80px;
-    height:80px;
+    width:72px;
+    height:72px;
     border-radius:8px;
     background:var(--foam);
     padding:5px;
   }
   .form-card .form-label{
-    margin-top:6px;
-    font-size:10px;
-    letter-spacing:.04em;
+    margin-top:10px;
+    font-size:clamp(11px, 3.6vw, 15px);
+    letter-spacing:.02em;
     color:var(--foam);
-    opacity:.85;
+    opacity:.9;
     text-align:center;
-    line-height:1.3;
+    line-height:1.4;
   }
-  .form-card a{
-    color:var(--aqua);
+  .blink-link{
+    color:var(--coral);
     text-decoration:none;
-    font-size:10px;
-    margin-top:2px;
-    opacity:.8;
+    font-weight:600;
+    animation:blinkLink 1s step-start infinite;
   }
-  .form-card a:hover{ text-decoration:underline; }
+  .blink-link:hover{ text-decoration:underline; }
+  @keyframes blinkLink{ 50%{ opacity:0; } }
 
   .lang-toggle{
     position:absolute;
@@ -192,6 +194,7 @@
   @media (prefers-reduced-motion: reduce){
     .wave-track{ animation:none; }
     .hero-number{ transition:none; }
+    .blink-link{ animation:none; }
   }
 </style>
 </head>
@@ -229,13 +232,17 @@
     <div class="forms-section">
       <div class="form-card">
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fforms.gle%2FPFBNPmBprpW7B1cV8" alt="Sign-in form QR code">
-        <div class="form-label" data-i18n="signInLabel">Sign in to the pool</div>
-        <a href="https://forms.gle/PFBNPmBprpW7B1cV8" target="_blank" data-i18n="openLink">Open form</a>
+        <div class="form-label">
+          <span data-i18n="signInPrefix">Sign in with QR code or</span>
+          <a href="https://forms.gle/PFBNPmBprpW7B1cV8" target="_blank" class="blink-link" data-i18n="clickHere">click here</a>.
+        </div>
       </div>
       <div class="form-card">
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fforms.gle%2F44q7aepvs9hbm4Fz5" alt="Request pre-filled link form QR code">
-        <div class="form-label" data-i18n="prefillLabel">Get a pre-filled bookmark</div>
-        <a href="https://forms.gle/44q7aepvs9hbm4Fz5" target="_blank" data-i18n="openLink">Open form</a>
+        <div class="form-label">
+          <span data-i18n="prefillPrefix">Get bookmark for pre-filled form or</span>
+          <a href="https://forms.gle/44q7aepvs9hbm4Fz5" target="_blank" class="blink-link" data-i18n="clickHere">click here</a>.
+        </div>
       </div>
     </div>
   </div>
@@ -268,9 +275,9 @@
       lastUpdated: "Last updated",
       justNow: "just now",
       error: "Couldn't reach the live count — retrying…",
-      signInLabel: "Sign in to the pool",
-      prefillLabel: "Get bookmark for pre-filled form",
-      openLink: "Open form"
+      signInPrefix: "Sign in with QR code or",
+      prefillPrefix: "Get bookmark for pre-filled form or",
+      clickHere: "click here"
     },
     zh: {
       clubName: "特伦特公园草坪俱乐部",
@@ -282,9 +289,9 @@
       lastUpdated: "最后更新",
       justNow: "刚刚",
       error: "无法获取实时数据 — 正在重试…",
-      signInLabel: "泳池签到",
-      prefillLabel: "获取预填链接书签",
-      openLink: "打开表格"
+      signInPrefix: "扫描二维码签到，或",
+      prefillPrefix: "获取预填表格书签，或",
+      clickHere: "点击此处"
     }
   };
 
