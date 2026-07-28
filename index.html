@@ -27,6 +27,8 @@
     font-family:'IBM Plex Mono', 'PingFang SC', 'Microsoft YaHei', monospace, sans-serif;
     color:var(--foam);
     overflow-x:hidden;
+    user-select:none;
+    -webkit-user-select:none;
   }
   .card{
     position:relative;
@@ -179,6 +181,18 @@
   }
   .waves path{ fill:var(--deep); }
   .waves .w2{ fill:var(--ink); opacity:.8; }
+
+  .site-footer{
+    position:fixed;
+    left:0; right:0;
+    bottom:8px;
+    text-align:center;
+    font-size:10px;
+    letter-spacing:.06em;
+    color:var(--foam);
+    opacity:.4;
+    z-index:2;
+  }
   @keyframes drift{
     from{ transform:translateX(0); }
     to{ transform:translateX(-50%); }
@@ -253,6 +267,8 @@
       <svg viewBox="0 0 800 140" preserveAspectRatio="none"><path class="w2" d="M0,60 C150,120 350,0 500,60 C650,120 750,20 800,60 L800,140 L0,140 Z"/></svg>
     </div>
   </div>
+
+  <div class="site-footer">App design by Tudor Designs</div>
 
 <script>
   // Paste the "Publish to web" CSV URL for the public spreadsheet's
@@ -355,6 +371,18 @@
 
   refresh();
   setInterval(refresh, REFRESH_MS);
+
+  // Basic deterrents against casual copying — right-click and a few common
+  // shortcuts. Note: this cannot stop anyone determined (e.g. via browser
+  // dev tools), since the page's HTML/CSS/JS must be readable by the
+  // browser to run at all. It only discourages casual copy-paste.
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("keydown", e => {
+    const k = e.key.toLowerCase();
+    const blockedCombo =
+      (e.ctrlKey || e.metaKey) && (k === "u" || k === "s" || (e.shiftKey && k === "i"));
+    if (k === "f12" || blockedCombo) e.preventDefault();
+  });
 </script>
 </body>
 </html>
