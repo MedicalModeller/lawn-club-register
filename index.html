@@ -99,6 +99,46 @@
   }
   .updated.stale{ color:var(--coral); opacity:.85; }
 
+  .forms-section{
+    margin-top:28px;
+    padding-top:20px;
+    border-top:1px solid rgba(243,247,245,.15);
+    display:flex;
+    justify-content:center;
+    gap:56px;
+    flex-wrap:wrap;
+  }
+  .form-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    max-width:110px;
+  }
+  .form-card img{
+    width:80px;
+    height:80px;
+    border-radius:8px;
+    background:var(--foam);
+    padding:5px;
+  }
+  .form-card .form-label{
+    margin-top:6px;
+    font-size:10px;
+    letter-spacing:.04em;
+    color:var(--foam);
+    opacity:.85;
+    text-align:center;
+    line-height:1.3;
+  }
+  .form-card a{
+    color:var(--aqua);
+    text-decoration:none;
+    font-size:10px;
+    margin-top:2px;
+    opacity:.8;
+  }
+  .form-card a:hover{ text-decoration:underline; }
+
   .lang-toggle{
     position:absolute;
     top:20px;
@@ -185,6 +225,19 @@
     </div>
 
     <div class="updated" id="updated">Loading…</div>
+
+    <div class="forms-section">
+      <div class="form-card">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fforms.gle%2FPFBNPmBprpW7B1cV8" alt="Sign-in form QR code">
+        <div class="form-label" data-i18n="signInLabel">Sign in to the pool</div>
+        <a href="https://forms.gle/PFBNPmBprpW7B1cV8" target="_blank" data-i18n="openLink">Open form</a>
+      </div>
+      <div class="form-card">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fforms.gle%2F44q7aepvs9hbm4Fz5" alt="Request pre-filled link form QR code">
+        <div class="form-label" data-i18n="prefillLabel">Get a pre-filled bookmark</div>
+        <a href="https://forms.gle/44q7aepvs9hbm4Fz5" target="_blank" data-i18n="openLink">Open form</a>
+      </div>
+    </div>
   </div>
 
   <div class="waves">
@@ -214,7 +267,10 @@
       children: "Children",
       lastUpdated: "Last updated",
       justNow: "just now",
-      error: "Couldn't reach the live count — retrying…"
+      error: "Couldn't reach the live count — retrying…",
+      signInLabel: "Sign in to the pool",
+      prefillLabel: "Get bookmark for pre-filled form",
+      openLink: "Open form"
     },
     zh: {
       clubName: "特伦特公园草坪俱乐部",
@@ -225,7 +281,10 @@
       children: "儿童",
       lastUpdated: "最后更新",
       justNow: "刚刚",
-      error: "无法获取实时数据 — 正在重试…"
+      error: "无法获取实时数据 — 正在重试…",
+      signInLabel: "泳池签到",
+      prefillLabel: "获取预填链接书签",
+      openLink: "打开表格"
     }
   };
 
